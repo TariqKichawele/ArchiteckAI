@@ -163,6 +163,7 @@ export const codeAgentFunction = inngest.createFunction(
                     content: "Something went wrong, please try again.",
                     role: "ASSISTANT",
                     type: "ERROR",
+                    projectId: event.data.projectId,
                 }
             })
         }
@@ -177,7 +178,8 @@ export const codeAgentFunction = inngest.createFunction(
                         title: "Fragment",
                         files: result.state.data.files,
                     }
-                }
+                },
+                projectId: event.data.projectId,
             }
         })
     })

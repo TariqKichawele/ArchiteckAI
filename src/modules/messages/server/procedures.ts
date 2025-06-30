@@ -13,7 +13,10 @@ export const messagesRouter = createTRPCRouter({
     create: baseProcedure
         .input(
             z.object({
-                value: z.string().min(1, { message: "Message cannot be empty" }),
+                value: z.string()
+                .min(1, { message: "Message cannot be empty" })
+                .max(10000, { message: "Message is too long" }),
+                projectId: z.string().optional(),
             })
         )
         .mutation(async ({ input }) => {
@@ -22,6 +25,7 @@ export const messagesRouter = createTRPCRouter({
                     content: input.value,
                     role: "USER",
                     type: "RESULT",
+                    projectId: input.projectId,
                 }
             });
 
@@ -29,6 +33,7 @@ export const messagesRouter = createTRPCRouter({
                 name: "code-agent/run",
                 data: {
                     value: input.value,
+                    projectId: input.projectId,
                 }
             })
 
