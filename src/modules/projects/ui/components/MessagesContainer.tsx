@@ -14,15 +14,18 @@ interface Props {
 
 const MessagesContainer = ({ projectId, activeFragment, setActiveFragment }: Props) => {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const lastAssistantMessageRef = useRef<string | null>(null);
+  
   const trpc = useTRPC()
   const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
     projectId,
   }))
 
   useEffect(() => {
-    const lastMessage = messages.findLast((message) => message.role === "ASSISTANT" && message.fragment);
-    if (lastMessage ) {
-      setActiveFragment(lastMessage.fragment);
+    const lastAssistantMessage = messages.findLast((message) => message.role === "ASSISTANT");
+    if (lastAssistantMessage?.fragment && lastAssistantMessage.id !== lastAssistantMessageRef.current) {
+      lastAssistantMessageRef.current = lastAssistantMessage.id;
+      setActiveFragment(lastAssistantMessage.fragment);
     }
   }, [messages, setActiveFragment]);
 
