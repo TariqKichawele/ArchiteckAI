@@ -5,21 +5,25 @@ import Image from "next/image";
 import {
     SignedIn,
     SignedOut,
-    UserButton,
-    UserProfile,
     SignInButton,
     SignUpButton,
 } from '@clerk/nextjs';
 
 import { Button } from '@/components/ui/button';
-import { useTheme } from 'next-themes';
 import UserControl from '@/components/UserControl';
-
+import { useScroll } from '@/hooks/use-scroll';
 import React from 'react'
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
+    const isScrolled = useScroll(10);
   return (
-    <nav className="p-4 bg-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b border-transparent">
+    <nav 
+        className={cn(
+            "p-4 bg-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b border-transparent", 
+            isScrolled && "bg-background border-border"
+        )}
+    >
         <div className="max-w-5xl mx-auto flex items-center justify-between w-full">
             <Link href="/" className="flex items-center gap-2">
                 <Image src="/logo.svg" alt="logo" width={24} height={24} />
