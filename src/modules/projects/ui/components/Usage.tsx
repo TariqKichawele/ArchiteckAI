@@ -14,13 +14,13 @@ const Usage = ({ points, msBeforeNext }: Props) => {
     const { has } = useAuth();
     const hasProAccess = has?.({ plan: "pro" });
     const isFreeTier = has?.({ plan: "free_user" });
-    
+
     return (
         <div className='rounded-t-xl bg-background border border-b-0 p-2.5'>
             <div className='flex items-center gap-x-2'>
                 <div>
                     <p className='text-sm'>
-                    {points} {isFreeTier ? "free" : "" } credits remaining
+                        {points} {isFreeTier ? "free" : "" } credits remaining
                     </p>
                     <p className='text-xs text-muted-foreground'>
                         Resets in {" "}
