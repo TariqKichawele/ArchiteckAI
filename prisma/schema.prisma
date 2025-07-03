@@ -62,3 +62,10 @@ model Fragment {
   
 }
 
+model Usage {
+  key String @id @default(uuid())
+  points Int
+  expire DateTime?
+  
+}
+
