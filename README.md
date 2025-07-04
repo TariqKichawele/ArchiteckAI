@@ -1,3 +1,45 @@
+# ArchiteckAI
+
+> Transform ideas into code through intelligent conversation
+
+**ArchiteckAI** is a modern web application that allows developers to generate applications and websites by simply chatting with AI. Built with cutting-edge technologies, it provides an intuitive interface for code creation with live preview capabilities.
+
+## ✨ Features
+
+- 🤖 **AI-Powered Code Generation** - Chat with AI to create apps and websites
+- 🔍 **Live Preview** - Instant sandbox preview of generated code
+- 📁 **Project Management** - Organize and manage your AI-generated projects
+- 🎨 **Modern UI** - Beautiful, responsive design with light/dark theme support
+- 🔐 **Secure Authentication** - User management with Clerk
+- ⚡ **Real-time Updates** - Live message streaming and project updates
+- 🗑️ **Project Control** - Delete projects with cascading cleanup
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
+- **Backend**: tRPC, Prisma ORM, PostgreSQL
+- **Authentication**: Clerk
+- **Deployment**: Vercel
+- **UI Components**: Radix UI, Lucide Icons
+- **Real-time**: React Query with polling
+
+## 🚀 Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables
+4. Run database migrations: `npx prisma migrate dev`
+5. Start development server: `npm run dev`
+
+## 🌐 Live Demo
+
+[View Live Application](https://your-app-url.vercel.app)
+
+---
+
+*Built with ❤️ by Tariq Kichawele*
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
