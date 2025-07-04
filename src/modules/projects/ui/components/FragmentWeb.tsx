@@ -29,26 +29,54 @@ const FragmentWeb = ({ data }: Props) => {
     }
 
     const handleIframeError = () => {
+        console.log('Iframe error occurred');
         setIframeError(true);
         setIsLoading(false);
     };
 
-    const handleIframeLoad = () => {
-        setIsLoading(false);
-        setIframeError(false);
+    const handleIframeLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
+        console.log('Iframe loaded successfully');
+        const iframe = e.target as HTMLIFrameElement;
+        
+        // Check if iframe actually loaded content or was blocked
+        try {
+            // For same-origin content, we can check contentDocument
+            if (iframe.contentDocument || iframe.contentWindow) {
+                setIsLoading(false);
+                setIframeError(false);
+                return;
+            }
+        } catch (error) {
+            // This is expected for cross-origin content
+            console.log('Cross-origin iframe - this is normal:', error);
+        }
+        
+        // For cross-origin iframes, we assume success if onLoad fired
+        // Give it a moment to render
+        setTimeout(() => {
+            setIsLoading(false);
+            setIframeError(false);
+        }, 1000);
     };
 
-    // Set a timeout to show error if iframe doesn't load within 10 seconds
+    // Set a timeout to show error if iframe doesn't load within 15 seconds
     useEffect(() => {
+        if (!data.sandboxUrl) {
+            setIframeError(true);
+            setIsLoading(false);
+            return;
+        }
+
         const timeout = setTimeout(() => {
             if (isLoading && !iframeError) {
+                console.log('Iframe timeout - showing error fallback');
                 setIframeError(true);
                 setIsLoading(false);
             }
-        }, 10000); // 10 second timeout
+        }, 15000); // 15 second timeout
 
         return () => clearTimeout(timeout);
-    }, [fragmentKey, isLoading, iframeError]);
+    }, [fragmentKey, isLoading, iframeError, data.sandboxUrl]);
 
   return (
     <div className='flex flex-col w-full h-full'>
@@ -67,7 +95,7 @@ const FragmentWeb = ({ data }: Props) => {
                     disabled={copied || !data.sandboxUrl}    
                 >
                     <span className='truncate'>
-                        {data.sandboxUrl}
+                        {data.sandboxUrl || 'No URL available'}
                     </span>
                 </Button>
             </Hint>
@@ -92,8 +120,13 @@ const FragmentWeb = ({ data }: Props) => {
                 <div className='space-y-2'>
                     <h3 className='text-lg font-medium'>Preview Unavailable</h3>
                     <p className='text-sm text-muted-foreground max-w-md'>
-                        The preview cannot be displayed in the embedded view. This is typically due to security restrictions from the hosting service.
+                        The preview cannot be displayed in the embedded view. This might be due to:
                     </p>
+                    <ul className='text-xs text-muted-foreground text-left max-w-md space-y-1'>
+                        <li>• Security restrictions from the hosting service</li>
+                        <li>{`• The sandbox URL doesn't support embedding`}</li>
+                        <li>• Network connectivity issues</li>
+                    </ul>
                 </div>
                 <div className='flex gap-2'>
                     <Button 
@@ -115,16 +148,19 @@ const FragmentWeb = ({ data }: Props) => {
         ) : (
             <div className='relative w-full h-full'>
                 {isLoading && (
-                    <div className='absolute inset-0 flex items-center justify-center bg-background/50 z-10'>
-                        <div className='text-sm text-muted-foreground'>Loading preview...</div>
+                    <div className='absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10'>
+                        <div className='flex flex-col items-center space-y-2'>
+                            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+                            <div className='text-sm text-muted-foreground'>Loading preview...</div>
+                        </div>
                     </div>
                 )}
                 <iframe 
                     key={fragmentKey}
-                    className='w-full h-full'
-                    sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation allow-presentation'
+                    className='w-full h-full border-0'
+                    sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation'
                     src={data.sandboxUrl}
-                    loading='lazy'
+                    loading='eager'
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Code Preview"
