@@ -2,7 +2,7 @@ import Hint from '@/components/Hint';
 import { Button } from '@/components/ui/button';
 import { Fragment } from '@/generated/prisma';
 import { ExternalLinkIcon, RefreshCcwIcon, AlertCircleIcon } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface Props {
     data: Fragment;
@@ -12,10 +12,12 @@ const FragmentWeb = ({ data }: Props) => {
     const [fragmentKey, setFragmentKey] = useState(0);
     const [copied, setCopied] = useState(false);
     const [iframeError, setIframeError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const onRefresh = () => {
         setFragmentKey(prev => prev + 1);
         setIframeError(false);
+        setIsLoading(true);
     };
 
     const handleCopy = () => {
@@ -28,7 +30,25 @@ const FragmentWeb = ({ data }: Props) => {
 
     const handleIframeError = () => {
         setIframeError(true);
+        setIsLoading(false);
     };
+
+    const handleIframeLoad = () => {
+        setIsLoading(false);
+        setIframeError(false);
+    };
+
+    // Set a timeout to show error if iframe doesn't load within 10 seconds
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (isLoading && !iframeError) {
+                setIframeError(true);
+                setIsLoading(false);
+            }
+        }, 10000); // 10 second timeout
+
+        return () => clearTimeout(timeout);
+    }, [fragmentKey, isLoading, iframeError]);
 
   return (
     <div className='flex flex-col w-full h-full'>
@@ -93,31 +113,25 @@ const FragmentWeb = ({ data }: Props) => {
                 </div>
             </div>
         ) : (
-            <iframe 
-                key={fragmentKey}
-                className='w-full h-full'
-                sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation'
-                src={data.sandboxUrl}
-                loading='lazy'
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                title="Code Preview"
-                onError={handleIframeError}
-                onLoad={(e) => {
-                    // Check if iframe content is blocked
-                    try {
-                        const iframe = e.target as HTMLIFrameElement;
-                        // If we can't access contentDocument due to CORS, it might still be loading
-                        setTimeout(() => {
-                            if (iframe.contentDocument === null && iframe.contentWindow === null) {
-                                handleIframeError();
-                            }
-                        }, 5000);
-                    } catch {
-                        // This is expected for cross-origin iframes
-                    }
-                }}
-            />
+            <div className='relative w-full h-full'>
+                {isLoading && (
+                    <div className='absolute inset-0 flex items-center justify-center bg-background/50 z-10'>
+                        <div className='text-sm text-muted-foreground'>Loading preview...</div>
+                    </div>
+                )}
+                <iframe 
+                    key={fragmentKey}
+                    className='w-full h-full'
+                    sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation allow-presentation'
+                    src={data.sandboxUrl}
+                    loading='lazy'
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Code Preview"
+                    onError={handleIframeError}
+                    onLoad={handleIframeLoad}
+                />
+            </div>
         )}
     </div>
   )
