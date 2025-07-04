@@ -3,6 +3,8 @@ import React, { Suspense } from 'react'
 import { trpc } from '@/trpc/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import ProjectView from '@/modules/projects/ui/views/ProjectView';
+import { ErrorBoundary } from 'react-error-boundary'
+import ErrorPage from '@/app/error'
 
 interface Props {
     params: Promise<{ projectId: string }>
@@ -24,9 +26,11 @@ const ProjectPage = async ({ params }: Props) => {
 
   return (
     <HydrationBoundary state={dehydratedState}>
-        <Suspense fallback={<div>Loading...</div>}>
-            <ProjectView projectId={projectId} />
-        </Suspense>
+        <ErrorBoundary fallback={<ErrorPage />}>
+            <Suspense fallback={<div>Loading...</div>}>
+                <ProjectView projectId={projectId} />
+            </Suspense>
+        </ErrorBoundary>
     </HydrationBoundary>
   )
 }

@@ -11,6 +11,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import UserControl from '@/components/UserControl';
+import ThemeToggle from '@/components/ThemeToggle';
 import { useScroll } from '@/hooks/use-scroll';
 import React from 'react'
 import { cn } from "@/lib/utils";
@@ -29,23 +30,26 @@ const Navbar = () => {
                 <Image src="/logo.svg" alt="logo" width={24} height={24} />
                 <h1 className="text-lg font-semibold">ArchiteckAI</h1>
             </Link>
-            <SignedOut>
-                <div className="flex gap-2">
-                    <SignUpButton>
-                        <Button variant={'outline'} size={'sm'}>
-                            Sign Up
-                        </Button>
-                    </SignUpButton>
-                    <SignInButton>
-                        <Button size={'sm'}>
-                            Sign In
-                        </Button>
-                    </SignInButton>
-                </div>
-            </SignedOut>
-            <SignedIn>
-                <UserControl showName />
-            </SignedIn>
+            <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <SignedOut>
+                    <div className="flex gap-2">
+                        <SignUpButton>
+                            <Button variant={'outline'} size={'sm'}>
+                                Sign Up
+                            </Button>
+                        </SignUpButton>
+                        <SignInButton>
+                            <Button size={'sm'}>
+                                Sign In
+                            </Button>
+                        </SignInButton>
+                    </div>
+                </SignedOut>
+                <SignedIn>
+                    <UserControl showName />
+                </SignedIn>
+            </div>
         </div>
     </nav>
   )

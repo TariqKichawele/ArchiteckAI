@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { CrownIcon } from 'lucide-react';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,20 @@ const Usage = ({ points, msBeforeNext }: Props) => {
     const hasProAccess = has?.({ plan: "pro" });
     const isFreeTier = has?.({ plan: "free_user" });
 
+    const resetTime = useMemo(() => {
+        try {
+            return formatDuration(
+                intervalToDuration({
+                    start: new Date(),
+                    end: new Date(Date.now() + msBeforeNext)
+                }),
+                { format: ["months", "days", "hours"]}
+            )
+        } catch (error) {
+            console.error("Error getting reset time", error);
+        }
+    }, [msBeforeNext])
+
     return (
         <div className='rounded-t-xl bg-background border border-b-0 p-2.5'>
             <div className='flex items-center gap-x-2'>
@@ -23,14 +37,7 @@ const Usage = ({ points, msBeforeNext }: Props) => {
                         {points} {isFreeTier ? "free" : "" } credits remaining
                     </p>
                     <p className='text-xs text-muted-foreground'>
-                        Resets in {" "}
-                        {formatDuration(
-                            intervalToDuration({
-                                start: new Date(),
-                                end: new Date(Date.now() + msBeforeNext)
-                            }),
-                            { format: ["months", "days", "hours"]}
-                        )}
+                        Resets in {" "} {resetTime}
                     </p>
                 </div>
                 {!hasProAccess && (
