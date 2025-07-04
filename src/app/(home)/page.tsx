@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className='flex flex-col ]max-w-5xl mx-auto w-full'>
+    <div className='flex flex-col max-w-5xl mx-auto w-full space-y-12'>
       <section className="space-y-6 py-[16vh] 2xl:py-48">
         <div className="flex flex-col items-center">
           <Image 
@@ -28,7 +28,9 @@ export default function Home() {
           <ProjectForm />
         </div>
       </section>
-      <ProjectsList />
+      <div className="pb-12">
+        <ProjectsList />
+      </div>
     </div>
   )
 }

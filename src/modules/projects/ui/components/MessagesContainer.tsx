@@ -19,6 +19,8 @@ const MessagesContainer = ({ projectId, activeFragment, setActiveFragment }: Pro
   const trpc = useTRPC()
   const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
     projectId,
+  }, {
+    refetchInterval: 2000,
   }))
 
   useEffect(() => {
